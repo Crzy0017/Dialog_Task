@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Ali/AndroidStudioProjects/Menu_HomeTask/app/src/main/res/drawable/dialog_btn.xml" value="0.1495" />
+        <entry key="..\:/Users/Ali/AndroidStudioProjects/Menu_HomeTask/app/src/main/res/layout/custom_dialog.xml" value="0.1" />
+        <entry key="..\:/Users/Ali/AndroidStudioProjects/Menu_HomeTask/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.5844660194174758" />
+        <entry key="..\:/Users/Ali/AndroidStudioProjects/Menu_HomeTask/app/src/main/res/menu/menu_with_submenu.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/Ali/AndroidStudioProjects/Recycler2_Task/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/Ali/AndroidStudioProjects/Recycler2_Task/app/src/main/res/layout/add_item.xml" value="0.6485260770975056" />
         <entry key="..\:/Users/Ali/AndroidStudioProjects/Recycler2_Task/app/src/main/res/layout/item_currency.xml" value="0.22" />

@@ -11,7 +11,7 @@ import com.example.currencyi.model.Currency
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class CurrencyViewHolder (inflater: LayoutInflater, parent: ViewGroup) :
+class CurrencyViewHolder (inflater: LayoutInflater, parent: ViewGroup, val changedToolbar: (Currency) -> Unit) :
     RecyclerView.ViewHolder(inflater.inflate(R.layout.item_currency, parent, false)) {
 
     private val currencyText = itemView.findViewById<TextInputLayout>(R.id.currencyText)
@@ -22,5 +22,9 @@ class CurrencyViewHolder (inflater: LayoutInflater, parent: ViewGroup) :
         currencyText.hint = item.textview
         label.text = item.textview
         img.setBackgroundResource(item.imageRes)
+        img.setOnLongClickListener {
+            changedToolbar(item)
+            return@setOnLongClickListener true
+        }
     }
 }

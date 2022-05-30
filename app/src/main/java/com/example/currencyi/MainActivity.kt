@@ -5,7 +5,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.*
+import com.example.currencyi.dialog.FirstDialogCallBack
+import com.example.currencyi.dialog.FirstDialogFragment
 import com.example.currencyi.itemtouchhelper.DragDrop
 import com.example.currencyi.itemtouchhelper.ItemTouchDelegate
 import com.example.currencyi.itemtouchhelper.SwipeRight
@@ -13,7 +17,7 @@ import com.example.currencyi.model.Add
 import com.example.currencyi.model.Currency
 import com.example.currencyi.ui.Adapter
 
-class MainActivity : AppCompatActivity(), ItemTouchDelegate {
+class MainActivity : AppCompatActivity(), ItemTouchDelegate, FirstDialogCallBack {
     private var currencyList = mutableListOf(
         Currency("Тенге, Казахстан", 150000, 10, R.drawable.kz),
         Currency("Евро, ОС", 70000, 9, R.drawable.eu),
@@ -25,9 +29,13 @@ class MainActivity : AppCompatActivity(), ItemTouchDelegate {
         Currency("Лира, Турция", 350000, 3, R.drawable.tur),
         Add()
     )
-    private var currencyAdapter: Adapter? = null
+
+    private lateinit var defaultToolbar: androidx.appcompat.widget.Toolbar
+    private  var currencyAdapter: Adapter? = null
     private var currencyManager: LinearLayoutManager? = null
     private var dragDrop: ItemTouchHelper? = null
+    lateinit var openDialog: DialogFragment
+    private lateinit var deleteCurrency: Currency
     private var index = 1
     private var snapPosition = RecyclerView.NO_POSITION
     private var position = 0
@@ -36,14 +44,15 @@ class MainActivity : AppCompatActivity(), ItemTouchDelegate {
         super.onCreate(savedInstanceState)
         // supportActionBar?.hide()
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+       // setupToolbar()
+        defaultToolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(defaultToolbar)
         setupCurrency()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.menu_with_submenu, menu)
-
         return true
     }
 
@@ -74,6 +83,12 @@ class MainActivity : AppCompatActivity(), ItemTouchDelegate {
                 currencyAdapter?.noSort()
                 true
             }
+            R.id.deleteCurrency -> {
+                openDialog = FirstDialogFragment()
+                openDialog.show(supportFragmentManager, null)
+                setupToolbar()
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -89,7 +104,7 @@ class MainActivity : AppCompatActivity(), ItemTouchDelegate {
             smoothScroller.targetPosition = currencyAdapter?.itemCount ?: 0
             currencyManager?.startSmoothScroll(smoothScroller)
         }
-        currencyAdapter = Adapter(this, scroll)
+        currencyAdapter = Adapter(this, scroll, changedToolbar())
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
 
@@ -121,7 +136,33 @@ class MainActivity : AppCompatActivity(), ItemTouchDelegate {
         })
     }
 
+    private fun changedToolbar(): (Currency) -> Unit {
+        val newToolbar: (Currency) -> Unit = { currency ->
+            defaultToolbar.title = "Item selected"
+            defaultToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.new_background))
+            defaultToolbar.menu.findItem(R.id.sort).isVisible = false
+            defaultToolbar.menu.findItem(R.id.no_sort).isVisible = false
+            defaultToolbar.menu.findItem(R.id.deleteCurrency).isVisible = true
+            deleteCurrency = currency
+        }
+        return newToolbar
+    }
+
+    private fun setupToolbar() {
+        defaultToolbar.title = "Convertor"
+        defaultToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.white))
+        defaultToolbar.menu.findItem(R.id.sort).isVisible = true
+        defaultToolbar.menu.findItem(R.id.no_sort).isVisible = true
+        defaultToolbar.menu.findItem(R.id.deleteCurrency).isVisible = false
+    }
+
     override fun startDragging(viewHolder: RecyclerView.ViewHolder) {
         dragDrop?.startDrag(viewHolder)
     }
+
+    override fun onCurrencyRemove() {
+        currencyAdapter?.deleteCurrency(deleteCurrency)
+        openDialog.dismiss()
+    }
+
 }

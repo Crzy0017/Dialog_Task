@@ -3,4 +3,5 @@
     <string name="add">Добавить</string>
     <string name="tenge">Тенге, Казахстан</string>
     <string name="title">Convertor</string>
+    <string name="cancelText">Вы уверены,что хотите удалить валюту?</string>
 </resources>

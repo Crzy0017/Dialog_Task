@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.currencyi.R
 import com.example.currencyi.itemtouchhelper.ItemTouchDelegate
@@ -12,9 +13,10 @@ import com.example.currencyi.model.Add
 import com.example.currencyi.model.Currency
 import com.example.currencyi.model.Views
 
-class Adapter (
+class Adapter(
     private val itemTouchDelegate: ItemTouchDelegate,
-    private val scroll: () -> Unit
+    private val scroll: () -> Unit,
+    private val changedToolbar: (Currency) -> Unit
 ): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val data = mutableListOf<Views>()
@@ -26,14 +28,8 @@ class Adapter (
         return when(viewType){
             R.layout.add_item -> AddViewHolder(inflater, parent, addNewItem, scroll)
             else -> {
-                val holder = CurrencyViewHolder(inflater, parent)
-                holder.itemView.findViewById<ImageView>(R.id.Image)
-                    .setOnTouchListener { _, motionEvent ->
-                        if (motionEvent.actionMasked == MotionEvent.ACTION_DOWN) {
-                            itemTouchDelegate.startDragging(holder)
-                        }
-                        return@setOnTouchListener true
-                    }
+                val holder = CurrencyViewHolder(inflater, parent, changedToolbar)
+                dragDrop(holder)
                 holder
             }
         }
@@ -55,6 +51,17 @@ class Adapter (
 
     override fun getItemCount(): Int {
         return data.size
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun dragDrop(holder: CurrencyViewHolder) {
+        holder.itemView.findViewById<TextView>(R.id.Label)
+            .setOnTouchListener { _, motionEvent ->
+                if (motionEvent.actionMasked == MotionEvent.ACTION_DOWN) {
+                    itemTouchDelegate.startDragging(holder)
+                }
+                return@setOnTouchListener true
+            }
     }
 
     private fun addItem(item: Currency) {
@@ -85,6 +92,11 @@ class Adapter (
 
     fun deleteItem(position: Int) {
         data.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+    fun deleteCurrency(currency: Currency) {
+        data.removeAt(data.indexOf(currency))
         notifyDataSetChanged()
     }
 
